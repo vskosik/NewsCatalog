@@ -59,54 +59,6 @@ namespace NewsCatalog.BLL.ApiManager
             }
 
             return articles;
-
-            //-------------------------------------------------------------------------------------//
-
-            /*if (parameters.ContainsKey("source"))
-            {
-                if (parameters.ContainsKey("country") || parameters.ContainsKey("category"))
-                {
-                    throw new ArgumentException("Incorrect param input!");
-                }
-            }
-
-            string url = $"{NewsApiConfig.BaseUrl}top-headlines?apiKey={NewsApiConfig.ApiKey}";
-
-            foreach (var parameter in parameters)
-            {
-                url += $"&{parameter.Key}={parameter.Value}";
-            }
-
-            string json = networkManager.GetJson(url);
-            var articleSearch = JObject.Parse(json);
-            IList<JToken> results;
-
-            try
-            {
-                results = articleSearch["articles"].Children().ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            var articles = new ObservableCollection<ArticleDTO>();
-
-            foreach (var token in results)
-            {
-                articles.Add(new ArticleDTO()
-                {
-                    Title = token["title"].ToString(),
-                    Author = token["author"].ToString(),
-                    Description = token["description"].ToString(),
-                    SourceUrl = token["url"].ToString(),
-                    ImageUrl = token["urlToImage"].ToString(),
-                    PublishedData = token["publishedAt"].ToString(),
-                    Content = token["content"].ToString()
-                });
-            }
-
-            return articles; */
         }
 
         public ObservableCollection<BookmarkDTO> GetEverything(
@@ -140,7 +92,8 @@ namespace NewsCatalog.BLL.ApiManager
                         SourceUrl = article.Url,
                         ImageUrl = article.UrlToImage,
                         PublishedData = article.PublishedAt.ToString(),
-                        Content = article.Content
+                        Content = article.Content,
+                        IsBanned = false
                     });
                 }
             }

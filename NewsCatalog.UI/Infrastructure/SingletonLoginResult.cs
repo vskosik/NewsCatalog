@@ -8,6 +8,6 @@ namespace NewsCatalog.UI.Infrastructure
 {
     public static class SingletonLoginResult
     {
-        public static bool IsAllowed { get; set; } = false;
+        public static bool IsLogged { get; set; } = false;
     }
 }

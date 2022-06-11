@@ -21,15 +21,15 @@ namespace NewsCatalog.UI.ViewModel
 
         public bool IsLogged
         {
-            get => SingletonLoginResult.IsAllowed;
-            set => SingletonLoginResult.IsAllowed = value;
+            get => SingletonLoginResult.IsLogged;
+            set => SingletonLoginResult.IsLogged = value;
         }
 
         public LoginViewModel(IAdminService adminService)
         {
             _adminService = adminService;
 
-            ApplyCommand = new RelayCommand(async (param) =>
+            ApplyCommand = new RelayCommand((param) =>
             {
                 MD5 md5 = MD5.Create();
                 var passwordBytes = Encoding.ASCII.GetBytes(Password);
@@ -37,7 +37,7 @@ namespace NewsCatalog.UI.ViewModel
 
                 var passwordHash = Convert.ToBase64String(hashBytes);
 
-                foreach (var admin in await _adminService.GetAllAsync())
+                foreach (var admin in _adminService.GetAll())
                 {
                     if (admin.PasswordHash.Equals(passwordHash) && admin.Username.Equals(Login))
                     {
