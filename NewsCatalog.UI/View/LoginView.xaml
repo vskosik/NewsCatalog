@@ -11,6 +11,7 @@
     Width="300"
     Height="200"
     DataContext="{Binding Source={StaticResource viewModelLocator}, Path=LoginViewModel}"
+    WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>

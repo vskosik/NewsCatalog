@@ -19,6 +19,7 @@
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     TextOptions.TextFormattingMode="Ideal"
     TextOptions.TextRenderingMode="Auto"
+    WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
@@ -175,7 +176,7 @@
                                 </Expander>
                             </StackPanel>
                         </materialDesign:Card>
-                        <Grid>
+                        <Grid Height="400">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
@@ -282,7 +283,7 @@
                 <TabItem Header="Banned">
                     <Grid>
                         <ListBox
-                            x:Name="BookmarksListBox"
+                            x:Name="BannedArticlesListBox"
                             MaxHeight="340"
                             ItemsSource="{Binding BannedArticles}"
                             ScrollViewer.CanContentScroll="True"
@@ -327,7 +328,7 @@
                                             <ToggleButton
                                                 Margin="10"
                                                 VerticalAlignment="Top"
-                                                Command="{Binding DataContext.UnbanCommand, ElementName=BookmarksListBox}"
+                                                Command="{Binding DataContext.UnbanCommand, ElementName=BannedArticlesListBox}"
                                                 CommandParameter="{Binding Id}"
                                                 Content="{materialDesign:PackIcon Kind=Heart,
                                                                                   Size=21}"
@@ -339,7 +340,7 @@
                                                 Margin="10"
                                                 VerticalAlignment="Bottom"
                                                 materialDesign:ButtonAssist.CornerRadius="10"
-                                                Command="{Binding DataContext.ViewArticleCommand, ElementName=BookmarksListBox}"
+                                                Command="{Binding DataContext.ViewArticleCommand, ElementName=BannedArticlesListBox}"
                                                 CommandParameter="{Binding SourceUrl}"
                                                 Content="Read more..."
                                                 IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"

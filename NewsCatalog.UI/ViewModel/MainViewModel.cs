@@ -20,16 +20,14 @@ namespace NewsCatalog.UI.ViewModel
         #region private fields and properties
 
         private IBookmarkService _bookmarkService;
-        private IBannedArticleService _bannedArticleService;
-        private IAdminService _adminService;
 
         private ObservableCollection<BookmarkDTO> _articles;
         private ObservableCollection<BookmarkDTO> _bookmarks;
-        private ObservableCollection<BannedArticleDTO> _bannedArticles;
+        private ObservableCollection<BookmarkDTO> _bannedArticles;
 
         private BookmarkDTO _selectedArticle;
         private BookmarkDTO _selectedBookmark;
-        private BannedArticleDTO _selectedBannedArticle;
+        private BookmarkDTO _selectedBannedArticle;
 
         private string _keyWord;
         private Countries? _country;
@@ -60,16 +58,18 @@ namespace NewsCatalog.UI.ViewModel
             set
             {
                 _selectedBookmark = value;
+                SingletonArticle.SelectedArticle = value;
                 NotifyOnPropertyChanged();
             }
         }
 
-        public BannedArticleDTO SelectedBannedArticle
+        public BookmarkDTO SelectedBannedArticle
         {
             get => _selectedBannedArticle;
             set
             {
                 _selectedBannedArticle = value;
+                SingletonArticle.SelectedArticle = value;
                 NotifyOnPropertyChanged();
             }
         }
@@ -144,29 +144,12 @@ namespace NewsCatalog.UI.ViewModel
             }
         }
 
-        public int TotalResults => _articles.Count;
-
-        public int MaxPage => (TotalResults % 20 == 0 ? TotalResults / 20 : TotalResults / 20 + 1);
-
         public int Page
         {
             get => _page;
             set
             {
-
-                if (value >= MaxPage)
-                {
-                    _page = MaxPage;
-                }
-                else if (value <= 0)
-                {
-                    _page = 1;
-                }
-                else
-                {
-                    _page = value;
-                }
-
+                _page = value;
                 NotifyOnPropertyChanged();
             }
         }
@@ -201,7 +184,7 @@ namespace NewsCatalog.UI.ViewModel
             }
         }
 
-        public ObservableCollection<BannedArticleDTO> BannedArticles
+        public ObservableCollection<BookmarkDTO> BannedArticles
         {
             get => _bannedArticles;
             set
@@ -222,31 +205,27 @@ namespace NewsCatalog.UI.ViewModel
         #endregion
 
         public MainViewModel(IBookmarkService articleService,
-                             IBannedArticleService bannedArticleService,
-                             IAdminService adminService,
                              NewsApiManager newsApiManager)
         {
             _bookmarkService = articleService;
-            _bannedArticleService = bannedArticleService;
-            _adminService = adminService;
 
             _newsApiManager = newsApiManager;
 
             SearchMode = true;
 
-            KeyWord = "Війна";
-            Language = NewsAPI.Constants.Languages.UK;
-            SortBy = NewsAPI.Constants.SortBys.Relevancy;
-
             InitCommands();
-            LoadBookmarks();
-            LoadBannedArticles();
+            Load();
         }
 
         #region public methods
 
         private void InitCommands()
         {
+            ExitCommand = new RelayCommand((param) =>
+            {
+                ((Window)param).Close();
+            });
+
             SaveBookmarkCommand = new RelayCommand((param) =>
             {
                 SelectedArticle = Articles.FirstOrDefault(x => x.SourceUrl == (string)param);
@@ -281,7 +260,14 @@ namespace NewsCatalog.UI.ViewModel
 
             ViewArticleCommand = new RelayCommand((param) =>
             {
-                SingletonArticle.SelectedArticle = Articles.FirstOrDefault(x => x.SourceUrl == (string)param);
+                SelectedArticle = Articles.FirstOrDefault(x => x.SourceUrl == (string)param);
+                var articleView = new ArticleView();
+                articleView.Show();
+            });
+
+            ViewBookmarkCommand = new RelayCommand((param) =>
+            {
+                SelectedBookmark = Bookmarks.FirstOrDefault(x => x.SourceUrl == (string)param);
                 var articleView = new ArticleView();
                 articleView.Show();
             });
@@ -290,35 +276,22 @@ namespace NewsCatalog.UI.ViewModel
             {
                 Page++;
 
-                if (_searchMode)
-                {
-                    LoadEverythingNews();
-                }
-                else
-                {
-                    LoadTopHeadlinesNews();
-                }
+                SearchCommand.Execute(param);
             });
 
             PreviousPageCommand = new RelayCommand((param) =>
             {
                 Page--;
 
-                if (_searchMode)
-                {
-                    LoadEverythingNews();
-                }
-                else
-                {
-                    LoadTopHeadlinesNews();
-                }
+                SearchCommand.Execute(param);
             });
 
             LoginCommand = new RelayCommand((param) =>
             {
                 var loginView = new LoginView();
                 loginView.ShowDialog();
-                if (SingletonLoginResult.IsAllowed)
+
+                if (SingletonLoginResult.IsLogged)
                 {
                     var adminView = new AdminView();
                     ((Window)param).Hide();
@@ -330,39 +303,27 @@ namespace NewsCatalog.UI.ViewModel
             BanCommand = new RelayCommand((param) =>
             {
                 SelectedArticle = Articles.FirstOrDefault(x => x.SourceUrl == (string)param);
-                var bannedArticle = new BannedArticleDTO
-                {
-                    Url = SelectedArticle.SourceUrl
-                };
+                SelectedArticle.IsBanned = true;
+                _bookmarkService.Create(SelectedArticle);
+                BannedArticles.Add(SelectedArticle);
                 Articles.Remove(SelectedArticle);
-                _bannedArticleService.Create(bannedArticle);
-                BannedArticles.Add(bannedArticle);
             });
 
             UnbanCommand = new RelayCommand((param) =>
             {
                 SelectedBannedArticle = BannedArticles.FirstOrDefault(x => x.Id == (int)param);
-                _bannedArticleService.Delete(SelectedBannedArticle);
+                _bookmarkService.Delete(SelectedBannedArticle);
                 BannedArticles.Remove(SelectedBannedArticle);
             });
         }
 
-        private void LoadBookmarks()
+        private async void Load()
         {
-            Task.Run(async () =>
-            {
-                var bookmarks = await _bookmarkService.GetAllAsync();
-                Bookmarks = new ObservableCollection<BookmarkDTO>(bookmarks);
-            });
-        }
+            var bookmarks = (await _bookmarkService.GetAllAsync()).Where(x => !x.IsBanned);
+            Bookmarks = new ObservableCollection<BookmarkDTO>(bookmarks);
 
-        private void LoadBannedArticles()
-        {
-            Task.Run(async () =>
-            {
-                var bannedArticles = await _bannedArticleService.GetAllAsync();
-                BannedArticles = new ObservableCollection<BannedArticleDTO>(bannedArticles);
-            });
+            var bannedArticles = (await _bookmarkService.GetAllAsync()).Where(x => x.IsBanned);
+            BannedArticles = new ObservableCollection<BookmarkDTO>(bannedArticles);
         }
 
         private void LoadTopHeadlinesNews()
@@ -370,15 +331,22 @@ namespace NewsCatalog.UI.ViewModel
             Task.Run(() =>
             {
                 var articles = _newsApiManager.GetTopHeadlinesArticles(KeyWord, Country, Category, Language, Page);
-                var banned = _bannedArticleService.GetAll();
+                BannedArticles = new ObservableCollection<BookmarkDTO>(_bookmarkService.GetAll().Where(x => x.IsBanned));
+                var toRemove = new ObservableCollection<BookmarkDTO>();
 
                 foreach (var article in articles)
                 {
-                    if (banned.Any(x => x.Url == article.SourceUrl))
+                    if (BannedArticles.Any(x => x.SourceUrl == article.SourceUrl))
                     {
-                        articles.Remove(article);
+                        toRemove.Add(article);
                     }
                 }
+
+                foreach (var article in toRemove)
+                {
+                    articles.Remove(article);
+                }
+
                 Articles = new ObservableCollection<BookmarkDTO>(articles);
             });
         }
@@ -388,12 +356,12 @@ namespace NewsCatalog.UI.ViewModel
             Task.Run(() =>
             {
                 var articles = _newsApiManager.GetEverything(KeyWord, Language, From, To, SortBy, Page);
-                var banned = _bannedArticleService.GetAll();
+                BannedArticles = new ObservableCollection<BookmarkDTO>(_bookmarkService.GetAll().Where(x => x.IsBanned));
                 var toRemove = new ObservableCollection<BookmarkDTO>();
 
                 foreach (var article in articles)
                 {
-                    if (banned.Any(x => x.Url == article.SourceUrl))
+                    if (BannedArticles.Any(x => x.SourceUrl == article.SourceUrl))
                     {
                         toRemove.Add(article);
                     }
@@ -413,10 +381,12 @@ namespace NewsCatalog.UI.ViewModel
 
         #region commands
 
+        public ICommand ExitCommand { get; private set; }
         public ICommand SaveBookmarkCommand { get; private set; }
         public ICommand DeleteBookmarkCommand { get; private set; }
         public ICommand SearchCommand { get; private set; }
         public ICommand ViewArticleCommand { get; private set; }
+        public ICommand ViewBookmarkCommand { get; private set; }
         public ICommand NextPageCommand { get; private set; }
         public ICommand PreviousPageCommand { get; private set; }
         public ICommand LoginCommand { get; private set; }
