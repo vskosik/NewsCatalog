@@ -60,8 +60,14 @@
                         TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Grid.Row="1">
-                    <TextBlock Margin="10,20" Text="{Binding SelectedArticle.Description}" />
-                    <TextBlock Margin="10,20" Text="{Binding SelectedArticle.Content}" />
+                    <TextBlock
+                        Margin="10,20"
+                        Text="{Binding SelectedArticle.Description}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="10,20"
+                        Text="{Binding SelectedArticle.Content}"
+                        TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel
                     Grid.Row="2"
