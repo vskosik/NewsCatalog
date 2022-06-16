@@ -12,6 +12,7 @@ namespace NewsCatalog.UI.Infrastructure
     public class ViewModelLocator
     {
         private IKernel container;
+
         public ViewModelLocator()
         {
             container = new StandardKernel(new NewsModul());
