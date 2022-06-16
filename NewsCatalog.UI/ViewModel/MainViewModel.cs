@@ -8,9 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 
 namespace NewsCatalog.UI.ViewModel
@@ -47,7 +45,7 @@ namespace NewsCatalog.UI.ViewModel
             set
             {
                 _selectedArticle = value;
-                SingletonArticle.SelectedArticle = value;
+                ArticleViewModel.SelectedArticle = value;
                 NotifyOnPropertyChanged();
             }
         }
@@ -58,7 +56,7 @@ namespace NewsCatalog.UI.ViewModel
             set
             {
                 _selectedBookmark = value;
-                SingletonArticle.SelectedArticle = value;
+                ArticleViewModel.SelectedArticle = value;
                 NotifyOnPropertyChanged();
             }
         }
@@ -69,7 +67,7 @@ namespace NewsCatalog.UI.ViewModel
             set
             {
                 _selectedBannedArticle = value;
-                SingletonArticle.SelectedArticle = value;
+                ArticleViewModel.SelectedArticle = value;
                 NotifyOnPropertyChanged();
             }
         }
@@ -223,7 +221,8 @@ namespace NewsCatalog.UI.ViewModel
         {
             ExitCommand = new RelayCommand((param) =>
             {
-                ((Window)param).Close();
+                PagesPull.CurrentPage = PagesPull.Pages["MainView"];
+                Switcher.Switch(PagesPull.Pages["MainView"]);
             });
 
             SaveBookmarkCommand = new RelayCommand((param) =>
@@ -261,42 +260,55 @@ namespace NewsCatalog.UI.ViewModel
             ViewArticleCommand = new RelayCommand((param) =>
             {
                 SelectedArticle = Articles.FirstOrDefault(x => x.SourceUrl == (string)param);
-                var articleView = new ArticleView();
-                articleView.Show();
+                Switcher.Switch(PagesPull.Pages["ArticleView"]);
             });
 
             ViewBookmarkCommand = new RelayCommand((param) =>
             {
                 SelectedBookmark = Bookmarks.FirstOrDefault(x => x.SourceUrl == (string)param);
-                var articleView = new ArticleView();
-                articleView.Show();
+                Switcher.Switch(PagesPull.Pages["ArticleView"]);
+            });
+
+            ViewBannedArticleCommand = new RelayCommand((param) =>
+            {
+                SelectedBannedArticle = BannedArticles.FirstOrDefault(x => x.SourceUrl == (string)param);
+                Switcher.Switch(PagesPull.Pages["ArticleView"]);
             });
 
             NextPageCommand = new RelayCommand((param) =>
             {
                 Page++;
-
                 SearchCommand.Execute(param);
+
+                if (Articles.Count == 0)
+                {
+                    Page--;
+                    SearchCommand.Execute(param);
+                }
             });
 
             PreviousPageCommand = new RelayCommand((param) =>
             {
                 Page--;
-
                 SearchCommand.Execute(param);
+
+                if (Articles.Count == 0)
+                {
+                    Page++;
+                    SearchCommand.Execute(param);
+                }
             });
 
             LoginCommand = new RelayCommand((param) =>
             {
                 var loginView = new LoginView();
+                SingletonLoginResult.IsLogged = false;
                 loginView.ShowDialog();
 
                 if (SingletonLoginResult.IsLogged)
                 {
-                    var adminView = new AdminView();
-                    ((Window)param).Hide();
-                    adminView.ShowDialog();
-                    ((Window)param).Show();
+                    PagesPull.CurrentPage = PagesPull.Pages["AdminView"];
+                    Switcher.Switch(PagesPull.Pages["AdminView"]);
                 }
             });
 
@@ -387,6 +399,7 @@ namespace NewsCatalog.UI.ViewModel
         public ICommand SearchCommand { get; private set; }
         public ICommand ViewArticleCommand { get; private set; }
         public ICommand ViewBookmarkCommand { get; private set; }
+        public ICommand ViewBannedArticleCommand { get; private set; }
         public ICommand NextPageCommand { get; private set; }
         public ICommand PreviousPageCommand { get; private set; }
         public ICommand LoginCommand { get; private set; }

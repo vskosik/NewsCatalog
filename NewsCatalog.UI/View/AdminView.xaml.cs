@@ -17,7 +17,7 @@ namespace NewsCatalog.UI.View
     /// <summary>
     /// Interaction logic for AdminView.xaml
     /// </summary>
-    public partial class AdminView : Window
+    public partial class AdminView : UserControl
     {
         public AdminView()
         {

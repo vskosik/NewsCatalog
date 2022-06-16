@@ -7,20 +7,26 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="loginView"
-    Title="LoginView"
+    Title="Login"
     Width="300"
-    Height="200"
+    Height="220"
     DataContext="{Binding Source={StaticResource viewModelLocator}, Path=LoginViewModel}"
-    WindowStartupLocation="CenterOwner"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <Label
+            HorizontalAlignment="Center"
+            Content="{Binding Status}"
+            FontSize="13"
+            FontWeight="Bold" />
         <TextBox
-            Grid.Row="0"
+            Grid.Row="1"
             Width="250"
             Padding="10"
             VerticalAlignment="Center"
@@ -28,16 +34,16 @@
             materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
             BorderThickness="1"
             Text="{Binding Login}" />
-        <TextBox
-            Grid.Row="1"
+        <PasswordBox
+            Grid.Row="2"
             Width="250"
             Padding="10"
             VerticalAlignment="Center"
             materialDesign:HintAssist.Hint="Password"
             materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
             BorderThickness="1"
-            Text="{Binding Password}" />
-        <Grid Grid.Row="2">
+            PasswordChanged="PasswordBox_PasswordChanged" />
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
