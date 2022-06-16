@@ -5,7 +5,7 @@
     xmlns:local="clr-namespace:NewsCatalog.UI"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:vml="clr-namespace:NewsCatalog.UI.Infrastructure"
-    StartupUri="View/MainView.xaml">
+    StartupUri="View/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <vml:ViewModelLocator x:Key="viewModelLocator" />

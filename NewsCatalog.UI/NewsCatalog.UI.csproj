@@ -86,9 +86,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\BaseNotifyPropertyChanged.cs" />
+    <Compile Include="Infrastructure\PagesPull.cs" />
     <Compile Include="Infrastructure\RelayCommand.cs" />
-    <Compile Include="Infrastructure\SingletonArticle.cs" />
     <Compile Include="Infrastructure\SingletonLoginResult.cs" />
+    <Compile Include="Infrastructure\Switcher.cs" />
     <Compile Include="Infrastructure\ViewModelLocator.cs" />
     <Compile Include="ViewModel\ArticleViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
@@ -104,6 +105,9 @@
     </Compile>
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +163,16 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="IconPack\AdminViewIcon.ico" />
+    <Resource Include="IconPack\ArticleViewIcon.ico" />
+    <Resource Include="IconPack\LoginViewIcon.ico" />
+    <Resource Include="IconPack\MainViewIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

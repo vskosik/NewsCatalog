@@ -1,5 +1,6 @@
 ﻿using NewsCatalog.BLL.Services;
 using NewsCatalog.UI.Infrastructure;
+using NewsCatalog.UI.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +13,22 @@ using System.Windows.Input;
 
 namespace NewsCatalog.UI.ViewModel
 {
-    public class LoginViewModel
+    public class LoginViewModel : BaseNotifyPropertyChanged
     {
+        private IAdminService _adminService;
+        private string _status;
+
         public string Password { private get; set; }
         public string Login { private get; set; }
-
-        private IAdminService _adminService;
+        public string Status 
+        { 
+            get => _status;
+            set
+            {
+                _status = value;
+                NotifyOnPropertyChanged();
+            }
+        }
 
         public bool IsLogged
         {
@@ -27,12 +38,13 @@ namespace NewsCatalog.UI.ViewModel
 
         public LoginViewModel(IAdminService adminService)
         {
+            Status = "Enter your credentials:";
             _adminService = adminService;
 
             ApplyCommand = new RelayCommand((param) =>
             {
                 MD5 md5 = MD5.Create();
-                var passwordBytes = Encoding.ASCII.GetBytes(Password);
+                var passwordBytes = Encoding.ASCII.GetBytes(Password ?? string.Empty);
                 var hashBytes = md5.ComputeHash(passwordBytes);
 
                 var passwordHash = Convert.ToBase64String(hashBytes);
@@ -42,13 +54,17 @@ namespace NewsCatalog.UI.ViewModel
                     if (admin.PasswordHash.Equals(passwordHash) && admin.Username.Equals(Login))
                     {
                         IsLogged = true;
+                        Switcher.Switch(PagesPull.Pages["AdminView"]);
                         ((Window)param).Close();
                     }
                 }
+
+                Status = "Incorrect credentials!";
             });
 
             CloseCommand = new RelayCommand((param) =>
             {
+                Switcher.Switch(PagesPull.Pages["MainView"]);
                 ((Window)param).Close();
             });
         }
