@@ -169,13 +169,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="IconPack\AdminViewIcon.ico" />
-    <Resource Include="IconPack\ArticleViewIcon.ico" />
-    <Resource Include="IconPack\LoginViewIcon.ico" />
-    <Resource Include="IconPack\MainViewIcon.ico" />
+    <Resource Include="View\MainViewIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="View\MainViewIcon.ico" />
+    <Resource Include="View\LoginViewIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

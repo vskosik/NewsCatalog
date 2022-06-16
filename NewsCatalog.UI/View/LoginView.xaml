@@ -11,6 +11,7 @@
     Width="300"
     Height="220"
     DataContext="{Binding Source={StaticResource viewModelLocator}, Path=LoginViewModel}"
+    Icon="/View/LoginViewIcon.ico"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Grid>
