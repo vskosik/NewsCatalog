@@ -147,6 +147,11 @@ namespace NewsCatalog.UI.ViewModel
             get => _page;
             set
             {
+                if (value <= 0 || value > 20)
+                {
+                    return;
+                }
+
                 _page = value;
                 NotifyOnPropertyChanged();
             }
@@ -249,11 +254,11 @@ namespace NewsCatalog.UI.ViewModel
             {
                 if (_searchMode)
                 {
-                    LoadEverythingNews();
+                    LoadEverythingNewsAsync();
                 }
                 else
                 {
-                    LoadTopHeadlinesNews();
+                    LoadTopHeadlinesNewsAsync();
                 }
             });
 
@@ -277,10 +282,15 @@ namespace NewsCatalog.UI.ViewModel
 
             NextPageCommand = new RelayCommand((param) =>
             {
+                if (Articles == null || Articles?.Count == 0)
+                {
+                    return;
+                }
+
                 Page++;
                 SearchCommand.Execute(param);
 
-                if (Articles.Count == 0)
+                if (Articles == null || Articles?.Count == 0)
                 {
                     Page--;
                     SearchCommand.Execute(param);
@@ -289,14 +299,13 @@ namespace NewsCatalog.UI.ViewModel
 
             PreviousPageCommand = new RelayCommand((param) =>
             {
+                if ((Articles == null || Articles?.Count == 0) && Page == 1)
+                {
+                    return;
+                }
+
                 Page--;
                 SearchCommand.Execute(param);
-
-                if (Articles.Count == 0)
-                {
-                    Page++;
-                    SearchCommand.Execute(param);
-                }
             });
 
             LoginCommand = new RelayCommand((param) =>
@@ -338,9 +347,9 @@ namespace NewsCatalog.UI.ViewModel
             BannedArticles = new ObservableCollection<BookmarkDTO>(bannedArticles);
         }
 
-        private void LoadTopHeadlinesNews()
+        private async void LoadTopHeadlinesNewsAsync()
         {
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 var articles = _newsApiManager.GetTopHeadlinesArticles(KeyWord, Country, Category, Language, Page);
                 BannedArticles = new ObservableCollection<BookmarkDTO>(_bookmarkService.GetAll().Where(x => x.IsBanned));
@@ -363,9 +372,9 @@ namespace NewsCatalog.UI.ViewModel
             });
         }
 
-        private void LoadEverythingNews()
+        private async void LoadEverythingNewsAsync()
         {
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 var articles = _newsApiManager.GetEverything(KeyWord, Language, From, To, SortBy, Page);
                 BannedArticles = new ObservableCollection<BookmarkDTO>(_bookmarkService.GetAll().Where(x => x.IsBanned));
