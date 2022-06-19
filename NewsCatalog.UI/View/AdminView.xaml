@@ -353,6 +353,51 @@
                         </ListBox>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Admins">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid
+                            Grid.Column="0"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding Admins}"
+                            SelectedItem="{Binding SelectedAdmin}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Id}" Header="Id" />
+                                <DataGridTextColumn Binding="{Binding Username}" Header="Username" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Column="1" Margin="10">
+                            <Button
+                                Height="50"
+                                Margin="10"
+                                Padding="10"
+                                Command="{Binding CreateAdminCommand}"
+                                Content="Create" />
+                            <Button
+                                Height="50"
+                                Margin="10"
+                                Padding="10"
+                                Command="{Binding UpdateAdminCommand}"
+                                Content="Update" />
+                            <Button
+                                Height="50"
+                                Margin="10"
+                                Padding="10"
+                                Command="{Binding DeleteAdminCommand}"
+                                Content="Delete" />
+                            <Button
+                                Height="50"
+                                Margin="10"
+                                Padding="10"
+                                Command="{Binding RefreshAdminListCommand}"
+                                Content="Refresh" />
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </materialDesign:Card>
     </Grid>

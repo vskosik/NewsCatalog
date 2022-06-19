@@ -18,14 +18,17 @@ namespace NewsCatalog.UI.ViewModel
         #region private fields and properties
 
         private IBookmarkService _bookmarkService;
+        private IAdminService _adminService;
 
         private ObservableCollection<BookmarkDTO> _articles;
         private ObservableCollection<BookmarkDTO> _bookmarks;
         private ObservableCollection<BookmarkDTO> _bannedArticles;
+        private ObservableCollection<AdminDTO> _admins;
 
         private BookmarkDTO _selectedArticle;
         private BookmarkDTO _selectedBookmark;
         private BookmarkDTO _selectedBannedArticle;
+        private AdminDTO _selectedAdmin;
 
         private string _keyWord;
         private Countries? _country;
@@ -68,6 +71,16 @@ namespace NewsCatalog.UI.ViewModel
             {
                 _selectedBannedArticle = value;
                 ArticleViewModel.SelectedArticle = value;
+                NotifyOnPropertyChanged();
+            }
+        }
+
+        public AdminDTO SelectedAdmin
+        {
+            get => _selectedAdmin;
+            set
+            {
+                _selectedAdmin = value;
                 NotifyOnPropertyChanged();
             }
         }
@@ -197,6 +210,16 @@ namespace NewsCatalog.UI.ViewModel
             }
         }
 
+        public ObservableCollection<AdminDTO> Admins
+        {
+            get => _admins;
+            set
+            {
+                _admins = value;
+                NotifyOnPropertyChanged();
+            }
+        }
+
         public IEnumerable<Languages> Languages => Enum.GetValues(typeof(Languages)).Cast<Languages>();
 
         public IEnumerable<Countries> Countries => Enum.GetValues(typeof(Countries)).Cast<Countries>();
@@ -208,9 +231,11 @@ namespace NewsCatalog.UI.ViewModel
         #endregion
 
         public MainViewModel(IBookmarkService articleService,
-                             NewsApiManager newsApiManager)
+                                IAdminService adminService,
+                                NewsApiManager newsApiManager)
         {
             _bookmarkService = articleService;
+            _adminService = adminService;
 
             _newsApiManager = newsApiManager;
 
@@ -336,6 +361,42 @@ namespace NewsCatalog.UI.ViewModel
                 _bookmarkService.Delete(SelectedBannedArticle);
                 BannedArticles.Remove(SelectedBannedArticle);
             });
+
+            CreateAdminCommand = new RelayCommand((param) =>
+            {
+                PagesPull.CurrentPage = PagesPull.Pages["AdminView"];
+                Switcher.Switch(PagesPull.Pages["AdminCreateView"]);
+            });
+
+            UpdateAdminCommand = new RelayCommand((param) =>
+            {
+                if (SelectedAdmin == null)
+                {
+                    return;
+                }
+
+                AdminViewModel.SelectedAdmin = SelectedAdmin;
+
+                PagesPull.CurrentPage = PagesPull.Pages["AdminView"];
+                Switcher.Switch(PagesPull.Pages["AdminUpdateView"]);
+            });
+
+            DeleteAdminCommand = new RelayCommand((param) =>
+            {
+                if (SelectedAdmin == null)
+                {
+                    return;
+                }
+
+                _adminService.Delete(SelectedAdmin);
+                Admins.Remove(SelectedAdmin);
+                SelectedAdmin = null;
+            });
+
+            RefreshAdminListCommand = new RelayCommand(async (param) =>
+            {
+                Admins = new ObservableCollection<AdminDTO>(await _adminService.GetAllAsync());
+            });
         }
 
         private async void Load()
@@ -345,6 +406,9 @@ namespace NewsCatalog.UI.ViewModel
 
             var bannedArticles = (await _bookmarkService.GetAllAsync()).Where(x => x.IsBanned);
             BannedArticles = new ObservableCollection<BookmarkDTO>(bannedArticles);
+
+            var admins = await _adminService.GetAllAsync();
+            Admins = new ObservableCollection<AdminDTO>(admins);
         }
 
         private async void LoadTopHeadlinesNewsAsync()
@@ -414,6 +478,10 @@ namespace NewsCatalog.UI.ViewModel
         public ICommand LoginCommand { get; private set; }
         public ICommand BanCommand { get; private set; }
         public ICommand UnbanCommand { get; private set; }
+        public ICommand CreateAdminCommand { get; private set; }
+        public ICommand UpdateAdminCommand { get; private set; }
+        public ICommand DeleteAdminCommand { get; private set; }
+        public ICommand RefreshAdminListCommand { get; private set; }
 
         #endregion
     }

@@ -20,8 +20,10 @@ namespace NewsCatalog.UI.Infrastructure
             _pages = new Dictionary<string, UserControl>
             {
                 { "MainView", new MainView() },
+                { "ArticleView", new ArticleView() },
                 { "AdminView", new AdminView() },
-                { "ArticleView", new ArticleView() }
+                { "AdminCreateView", new AdminCreateView() },
+                { "AdminUpdateView", new AdminUpdateView() }
             };
         }
     }

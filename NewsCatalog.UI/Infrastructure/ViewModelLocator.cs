@@ -21,5 +21,6 @@ namespace NewsCatalog.UI.Infrastructure
         public MainViewModel MainViewModel => container.Get<MainViewModel>();
         public LoginViewModel LoginViewModel => container.Get<LoginViewModel>();
         public ArticleViewModel ArticleViewModel => container.Get<ArticleViewModel>();
+        public AdminViewModel AdminViewModel => container.Get<AdminViewModel>();
     }
 }

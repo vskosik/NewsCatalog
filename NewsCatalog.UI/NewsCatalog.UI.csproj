@@ -91,9 +91,16 @@
     <Compile Include="Infrastructure\SingletonLoginResult.cs" />
     <Compile Include="Infrastructure\Switcher.cs" />
     <Compile Include="Infrastructure\ViewModelLocator.cs" />
+    <Compile Include="ViewModel\AdminViewModel.cs" />
     <Compile Include="ViewModel\ArticleViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="View\AdminCreateView.xaml.cs">
+      <DependentUpon>AdminCreateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\AdminUpdateView.xaml.cs">
+      <DependentUpon>AdminUpdateView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\AdminView.xaml.cs">
       <DependentUpon>AdminView.xaml</DependentUpon>
     </Compile>
@@ -147,6 +154,14 @@
     <Folder Include="Model\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\AdminCreateView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AdminUpdateView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\AdminView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
