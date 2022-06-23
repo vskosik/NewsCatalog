@@ -13,6 +13,7 @@ namespace NewsCatalog.DAL.Context
 
         [Required]
         [StringLength(50)]
+        [Index(IsUnique = true)]
         public string Username { get; set; }
 
         [Required]

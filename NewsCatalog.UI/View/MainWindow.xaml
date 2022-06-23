@@ -9,6 +9,7 @@
     Title="News Catalog"
     Width="820"
     Height="600"
+    Icon="/View/MainViewIcon.ico"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Grid />
